@@ -1,7 +1,8 @@
 from distutils.log import debug
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 import json
-#import bill
+import pyqrcode
+import time
 
 app = Flask(__name__)
 
@@ -11,21 +12,34 @@ def home():
 
 @app.route('/products')
 def products():
-    return 'hello product'
-    #return bill.products
-    #number = bill.number
-    #item = bill.products[-1]['item']
-    #price = bill.products[-1]['price']
-    #taken = bill.products[-1]['taken']
-    #final_rate = bill.products[-1]['final_rate']
-
-    #return render_template('products.html', number=number, item=item, price=price, taken=taken, final_rate=final_rate)
+    pros = []
+    with open('storage/products.txt', 'r') as file:
+        for line in file:
+            pros.append(eval(line.strip()))
+            
+    return render_template('products.html', products=pros)
 
 @app.route('/cart', methods = ['POST', 'GET'])
 def cart():
-    return render_template('products.html', product='anzil')
+    data = request.get_json()
+    with open('storage/products.txt', 'a') as outfile:
+        json.dump(data, outfile)
+        outfile.write('\n')
+    return 'hi'
+
+@app.route('/payment')
+def pay():
+    #price = 10
+    url = pyqrcode.create('www.instagram.com')
+    url.svg("myqr", scale=10)
+    
+    return render_template('qr.html')
+
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
   
+
+
 
