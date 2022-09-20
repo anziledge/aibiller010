@@ -1,23 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>QR code page</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
+
+<script
+    type="text/javascript"
+    src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+  ></script>
+  <script
+    src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"
+  ></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  
+
+	<div id="qrpage">
     <div class="my-7">
     <h1 class="text-center">Scan the QR code below to pay</h1>
     </div>
 
     <div class="text-center">
-		<img src="myqr.svg" alt="uable to load qrcode">
+		<img src="{{image}}" alt="unable to load qrcode">
     </div>
+    </div>
+    
+    
+    
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</body>
-</html>
+	<div id="success" style="display:none;">
+        <lottie-player class="mx-auto" src="https://assets7.lottiefiles.com/private_files/lf30_poez9ped.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;" autoplay></lottie-player>
+          </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<script>
+		
+		window.onload = () => {
+			setInterval(()=>{
+				$('#qrpage').css("display", "none")
+				setInterval(() =>{
+					$('#success').css("display", "grid")},1000)
+				setInterval(() => {
+					window.open('http://127.0.0.1:5000/', '_self')},4000)
+			},10000)
+			
+			}
+		
+		
+	</script>
+
+{% endblock %}
