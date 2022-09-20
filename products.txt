@@ -1,0 +1,2 @@
+{"product no": 1, "label": "Good knight", "price": 77, "quantity": 2, "amount payable": 154}
+{"product no": 2, "label": "Pears soap", "price": 60, "quantity": 1, "amount payable": 60}
