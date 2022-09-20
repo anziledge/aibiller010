@@ -27,8 +27,6 @@ def now():
 
 
 product = None
-count_products = ['Pears soap', 'Good knight']
-weight_products = []
 
 referenceUnit = 1
 hx = HX711(5, 6)
@@ -45,26 +43,24 @@ def find_weight():
     
     return val
 
-product_no = 1
 total_price = 0
+checkout_count = 0
+text_file = os.path.join('storage', 'products.txt')
 
 
 def post(label,price,final_rate,taken):
-    global total_price, product_no
+    global total_price, product_no, checkout_count
     
     product = {}
-    product['product no'] = product_no
     product['label'] = label
     product['price'] = price
     product['quantity'] = taken
     product['amount payable'] = final_rate
-    
-    total_price += final_rate
-    
+
     requests.post('http://localhost:5000/cart', json=product)
     #webbrowser.open(f'http://localhost:5000/cart/?item={label}&price={price}&taken={taken}&final_rate={final_rate}')
     #webbrowser.open('http://localhost:5000/cart')
-    product_no += 1
+    
     
 
 def rate(final_weight,label,taken):
@@ -78,11 +74,15 @@ def rate(final_weight,label,taken):
 
 
 def list_com(label,final_weight):
-    taken = int(input('\n'+ label+ ' detected. Enter quantity : '))
+    if label == 'Pears soap' or label == 'Good knight':
+        #webbrowser.open('http://127.0.0.1:5000/count')
+        taken = 1
     rate(final_weight, label, taken)
 
-a = True
-while a:
+
+while True:
+    
+    
     with ImageImpulseRunner(modelfile) as runner:
         try:
             model_info = runner.init()
@@ -107,7 +107,8 @@ while a:
             next_frame = 0  # limit to ~10 fps here
             
             webbrowser.open('http://127.0.0.1:5000/')
-            old_label = None
+            
+            
             for res, img in runner.classifier(videoCaptureDeviceId):
                 
                 if (next_frame > now()):
@@ -117,25 +118,23 @@ while a:
                 if len(res["result"]["bounding_boxes"]) != 0:
                     #print(res)
                     label = res['result']['bounding_boxes'][0]['label']
-                    score = res['result']['bounding_boxes'][0]['value']
+                    score = res['result']['bounding_boxes'][0]['value']                    
                     
-                    if score > 0.9 and label != old_label:
+                    if os.path.isfile(text_file):
+                        pass
+                    else:
+                        old_labels = []
+                        checkout_count += 1
+                        total_price = 0                        
+                    
+                    if score > 0.9 and label not in old_labels:
                         #time.sleep(0.5)
                         final_weight = find_weight()
                         list_com(label,final_weight)
                         #print('Product : ' + label + ', Weight : ' + str(final_weight))
                         #print(label, str(final_weight))
-                        old_label = label
-                        
-                        answer = input('\nEnter y to checkout now, or any other key to continue shopping : ')
-                        if answer == 'y' or answer == 'Y':
-                            print('\nTotal amount to pay = Rs.' + str(total_price) + ' only.')
-                            print('THANKS FOR SHOPPING')
-                            a = False
-                            break
-                        else:
-                            print('Place other item.')
-                            continue
+                        old_labels.append(label)
+                       
                 
                 next_frame = now() + 100
 
