@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 #pic_folder = os.path.join('static', 'images')
 #app.config['UPLOAD_FOLDER'] = pic_folder
-fileno = 10
+fileno = 140
 
 @app.route('/')
 def home():
@@ -25,7 +25,8 @@ def products():
     
     price_list = [product['amount payable'] for product in pros]
     length = len(price_list)
-    total_price = sum(price_list)
+    total_price = round(sum(price_list), 2)
+    
             
     return render_template('products.html', products=pros, number=length, total_price=total_price)
 
@@ -47,7 +48,7 @@ def pay():
         for line in file:
             pros.append(eval(line.strip()))
     price_list = [product['amount payable'] for product in pros]
-    total_price = sum(price_list)
+    total_price = round(sum(price_list), 2)
     
     filename = str(fileno)
     fileno += 1
