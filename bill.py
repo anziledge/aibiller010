@@ -37,24 +37,23 @@ hx.tare()
 
 def find_weight():
     try:
+        time.sleep(3)
         val = abs(int(hx.get_weight(5)))
     except (KeyboardInterrupt, SystemExit):
         print('some error occured')
     
     return val
 
-total_price = 0
-checkout_count = 0
+
 text_file = os.path.join('storage', 'products.txt')
 
 
-def post(label,price,final_rate,taken):
-    global total_price, product_no, checkout_count
+def post(label,price,final_rate,quantity):
     
     product = {}
     product['label'] = label
     product['price'] = price
-    product['quantity'] = taken
+    product['quantity'] = quantity
     product['amount payable'] = final_rate
 
     requests.post('http://localhost:5000/cart', json=product)
@@ -63,21 +62,23 @@ def post(label,price,final_rate,taken):
     
     
 
-def rate(final_weight,label,taken):
+def rate(label, quantity):
     if label == 'Pears soap' :
-         price = 60
+        price = 51
     elif label == 'Good knight' :
-         price = 77
+        price = 77
+    else:
+        price = 70
          
-    final_rate = price * taken
-    post(label,price,final_rate,taken)
+    final_rate = price * quantity
+    
+    if label == 'Lemon':
+        final_rate_str = str(final_rate)
+        if '.' in final_rate_str and '0' in final_rate_str[final_rate_str.index('.'):]:
+            final_rate = float(final_rate_str[:final_rate_str.index('0')])
+    
+    post(label,price,final_rate,quantity)
 
-
-def list_com(label,final_weight):
-    if label == 'Pears soap' or label == 'Good knight':
-        #webbrowser.open('http://127.0.0.1:5000/count')
-        taken = 1
-    rate(final_weight, label, taken)
 
 
 while True:
@@ -114,27 +115,38 @@ while True:
                 if (next_frame > now()):
                     time.sleep((next_frame - now()) / 1000)
                     # print('classification runner response', res)
-
+                    
                 if len(res["result"]["bounding_boxes"]) != 0:
-                    #print(res)
-                    label = res['result']['bounding_boxes'][0]['label']
-                    score = res['result']['bounding_boxes'][0]['value']                    
                     
                     if os.path.isfile(text_file):
                         pass
                     else:
                         old_labels = []
-                        checkout_count += 1
-                        total_price = 0                        
                     
-                    if score > 0.9 and label not in old_labels:
-                        #time.sleep(0.5)
-                        final_weight = find_weight()
-                        list_com(label,final_weight)
-                        #print('Product : ' + label + ', Weight : ' + str(final_weight))
-                        #print(label, str(final_weight))
-                        old_labels.append(label)
-                       
+                    a = []
+                    if res['result']['bounding_boxes'][0]['label'] != 'Lemon':
+                        
+                        for i in range(len(res['result']['bounding_boxes'])):
+                            if res['result']['bounding_boxes'][i]['value'] > 0.9:
+                                a.append(res['result']['bounding_boxes'][i]['label'])
+                    
+                        if len(a) > 0:
+                            label = res['result']['bounding_boxes'][0]['label']
+                            if len(set(a)) == 1 and len(a) == 1 and label not in old_labels:
+                                taken = 1
+                                rate(label,taken)
+                                old_labels.append(label)
+                            elif len(set(a)) == 1 and len(a) > 1 and label not in old_labels:
+                                taken = len(a)
+                                rate(label,taken)
+                                old_labels.append(label)
+                            
+                    else:
+                        if res['result']['bounding_boxes'][0]['value'] > 0.9 and 'Lemon' not in old_labels:
+                            weight = find_weight()
+                            rate('Lemon', round(weight/1000, 2))
+                            old_labels.append('Lemon')
+                            
                 
                 next_frame = now() + 100
 
