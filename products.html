@@ -22,7 +22,11 @@
             <th scope="row">{{i+1}}</th>
             <td>{{products[i]['label']}}</th>
             <td>{{products[i]['price']}}</th>
-            <td>{{products[i]['quantity']}}</th>
+            {%if products[i]['label'] == 'Lemon'%}
+            <td>{{products[i]['quantity']}} Kg</th>
+            {%else%}
+            <td>{{products[i]['quantity']}} Nos</th>
+            {%endif%}
             <td>{{products[i]['amount payable']}}</th>
           </tr>
 			
