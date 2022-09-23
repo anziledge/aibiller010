@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 #pic_folder = os.path.join('static', 'images')
 #app.config['UPLOAD_FOLDER'] = pic_folder
-fileno = 140
+fileno = 190
 
 @app.route('/')
 def home():
@@ -60,7 +60,8 @@ def pay():
     
     # deletes products.txt
     text_file = os.path.join('storage', 'products.txt')
-    os.remove(text_file)
+    if os.path.isfile(text_file):
+        os.remove(text_file)
     
     return render_template('qr.html', image=file)
     
