@@ -82,7 +82,8 @@ def rate(label, quantity):
 
 
 while True:
-    
+    if os.path.isfile(text_file):
+        os.remove(text_file)
     
     with ImageImpulseRunner(modelfile) as runner:
         try:
@@ -125,6 +126,8 @@ while True:
                     
                     a = []
                     if res['result']['bounding_boxes'][0]['label'] != 'Lemon':
+                        #time.sleep(2)
+                        #res = runner.classifier(videoCaptureDeviceId)
                         
                         for i in range(len(res['result']['bounding_boxes'])):
                             if res['result']['bounding_boxes'][i]['value'] > 0.9:
@@ -144,8 +147,10 @@ while True:
                     else:
                         if res['result']['bounding_boxes'][0]['value'] > 0.9 and 'Lemon' not in old_labels:
                             weight = find_weight()
-                            rate('Lemon', round(weight/1000, 2))
-                            old_labels.append('Lemon')
+                            weight = round(weight/1000, 2)
+                            if int(weight) != 0:
+                                rate('Lemon', weight)
+                                old_labels.append('Lemon')
                             
                 
                 next_frame = now() + 100
